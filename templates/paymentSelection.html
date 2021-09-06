@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Payment Method</title>
+    <link rel="icon" href="{{ url_for('static', filename='imgs/trainLogo.png') }}" type="image/png" sizes="16x16">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        #backs {
+            min-height: 100vh;
+            min-width: 100vw;
+            position: absolute;
+            z-index: -100;
+            background: url("{{ url_for('static', filename='imgs/logBack.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            top: 0;
+            left: 0;
+        }
+
+        #backs div {
+            min-height: 100vh;
+            min-width: 100vw;
+        }
+        #paymentBack{
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(4.0px);
+            -webkit-backdrop-filter: blur(4.0px);
+        }
+        .paymentOption{
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="backs">
+    <div></div>
+</div>
+<div id="paymentBack">
+    <h2>Choose A Payment Method</h2>
+    <div id="paymentOptions">
+        <div class="paymentOption" id="paymentOption1">
+            <img src="{{ url_for('static', filename='imgs/masterCard.png') }}" alt="mastercard">
+            <p>Master Card</p>
+        </div>
+        <div class="paymentOption" id="paymentOption2">
+            <img src="{{ url_for('static', filename='imgs/jazzcash.png') }}" alt="JazzCash">
+            <p>JazzCash</p>
+        </div>
+        <div class="paymentOption" id="paymentOption3">
+            <img src="{{ url_for('static', filename='imgs/cash.png') }}" alt="Cash">
+            <p>Cash</p>
+        </div>
+    </div>
+    <button onclick="proceedNext()" style="font-weight: 700">Proceed Now!</button>
+</div>
+
+<script>
+    document.getElementById('paymentOption1').onclick = () => colorChangeAndSelect("1")
+    document.getElementById('paymentOption2').onclick = () => colorChangeAndSelect("2")
+    document.getElementById('paymentOption3').onclick = () => colorChangeAndSelect("3")
+    const colorChangeAndSelect = (n) => {
+        for (let i = 1; i <= 3; i++) {
+            if (n == i) {
+                document.getElementById('paymentOption' + i).classList.add("selectedOption");
+            } else {
+                document.getElementById('paymentOption' + i).classList.remove("selectedOption");
+            }
+        }
+    }
+    //asdasd
+    const proceedNext = () => {
+        let opts = document.getElementsByClassName('paymentOption')
+        let selected = 0;
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < opts[i].classList.length; j++) {
+                if (opts[i].classList[j] == "selectedOption") {
+                    selected = i + 1;
+                }
+            }
+
+        }
+
+        if (selected == 0) {
+            alert("Please Select A Valid Option First")
+        } else {
+            if (selected == 1) {
+                window.location.href = "/paywithmastercard"
+            } else if (selected == 2) {
+                window.location.href = "/paywithjazzcash"
+            } else {
+                window.location.href = "/success"
+            }
+        }
+    }
+
+</script>
+</body>
+</html>

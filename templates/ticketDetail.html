@@ -1,0 +1,128 @@
+{% extends 'main.html' %}
+
+{% block head %}
+    <title>Ticket Details</title>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+
+        /* Optional: Makes the sample page fill the window. */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4.0px);
+            -webkit-backdrop-filter: blur(4.0px);
+            border-radius: 10px;
+        }
+
+        .card-panel {
+            background: transparent!important;
+        }
+    </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjbnrZEdEQ_2aMH3HzquQ3uoPGr1GYL_M&callback=initMap"
+            type="text/javascript"></script>
+    <script defer>
+        let map;
+        tks = {{ tks|tojson }};
+
+        function initMap() {
+            const myLatLng = {lat: tks["sLocLat"], lng: tks['sLocLong']};
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: myLatLng,
+                zoom: 14,
+            });
+            marker = new google.maps.Marker({
+                position: myLatLng,
+                map,
+                title: "Hello World!",
+                icon: "{{ url_for('static', filename='imgs/train.png') }}"
+            });
+            console.log(document.getElementsByTagName('img')[0])
+            document.getElementsByTagName('img')[0].src = "https://i.pinimg.com/originals/cf/58/4a/cf584aff36fb87c055a8a026bfcb859e.png"
+        }
+
+        latlng = {lat: tks["sLocLat"], lng: tks['sLocLong']};
+        setInterval(() => {
+            latlng["lat"] = latlng["lat"] + 0.0001
+            latlng["lng"] = latlng["lng"] + 0.0001
+
+            marker.setPosition(latlng);
+        }, 1000)
+    </script>
+{% endblock %}
+
+
+{% block body %}
+    {% if  pDetail and tks %}
+        <nav class="z-depth-4">
+            <div class="nav-wrapper teal darken-2">
+                <a href="/" style="margin-left: 20px; font-size: 20px" class="brand-logo">Pak Railway</a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="/showTicket?ticket={{ tks['BookID'] }}">Get Ticket</a></li>
+                    <li><a href="/dashboard">My Profile</a></li>
+                    <li><a href="/logout" onclick="M.toast({html: 'You Logged Out'})" class="">Logout</a></li>
+                </ul>
+                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            </div>
+        </nav>
+        <ul class="sidenav" id="mobile-demo">
+            <li><a href="/showTicket?ticket={{ tks['BookID'] }}">Get Ticket</a></li>
+            <li><a href="/dashboard">My Profile</a></li>
+            <li><a href="/logout" onclick="M.toast({html: 'You Logged Out'})" class="">Logout</a></li>
+        </ul>
+
+        <div class="container  center">
+            <div class="row">
+                <div class="card">
+                    <div class="card-panel">
+                        <h3>Ticket Detail</h3>
+                        <table class="centered responsive-table">
+                            <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Train Name</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Time And Date</th>
+                                <th>Fare</th>
+                                <th>Payment</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{ tks['BookID'] }}</td>
+                                <td>{{ tks['trainName'] }} </td>
+                                <td>{{ tks['FromStation'] }}</td>
+                                <td>{{ tks['ToStation'] }}</td>
+                                <td>{{ tks['DeptTime'] }}</td>
+                                <td>{{ tks['Fare'] }}</td>
+                                <td>{{ tks['Payment'] }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row ">
+                <div class="card">
+                    <div class="card-panel">
+                        <h3>Location</h3>
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+

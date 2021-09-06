@@ -1,0 +1,216 @@
+{% extends 'main.html' %}
+
+{% block head %}
+    <title>My Home</title>
+    <style>
+        .card {
+            background: rgba(255, 255, 255, 0.65);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4.0px);
+            -webkit-backdrop-filter: blur(4.0px);
+        }
+        .card-panel{
+            background: transparent;
+            padding: 10px;
+        }
+        h4{
+            text-align: center;
+            font-size: 20px;
+        }
+        .collapsible-header{
+            background: rgba(255, 255, 255, 0.65);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(7.0px);
+            -webkit-backdrop-filter: blur(7.0px);
+        }
+        .collapsible-body{
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(3.0px);
+            -webkit-backdrop-filter: blur(3.0px);
+        }
+        #topPanel{
+           background: linear-gradient(to top right, #15cc3d, #1ffca7);
+        }
+        #topPanel2{
+            background: linear-gradient(to top right, #00efb3, #00ff73);
+        }
+        h5{
+            font-size: 20px;
+            font-weight: 600;
+        }
+    </style>
+{% endblock %}
+
+
+{% block body %}
+
+    {% if  psnger %}
+        <nav class="z-depth-4">
+            <div class="nav-wrapper teal darken-2">
+                <a href="/" style="margin-left: 20px; font-size: 20px" class="brand-logo">Pak Railway</a>
+                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="/traindetails">Book Ticket</a></li>
+                    <li><a href="/logout" onclick="M.toast({html: 'You Logged Out'})" class="">Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+        <ul class="sidenav" id="mobile-demo">
+            <li><a href="/traindetails">Book Ticket</a></li>
+            <li><a href="/logout" onclick="M.toast({html: 'You Logged Out'})" class="">Logout</a></li>
+        </ul>
+
+        <div class="contaner">
+            <!-- <div class="row white-text">
+                <div class="col s4 push-s8">
+                    <div class="card">
+                        <div class="card-panel" id="topPanel2">
+                            <h4>My Profile</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s8 pull-s4 ">
+                     <div class="card">
+                        <div class="card-panel" id="topPanel">
+                            <h4 style="display: flex; align-items: center; margin: 0 auto; width: max-content"><i class="material-icons" style="padding: 15px">assignment</i><span>Tickets</span></h4>
+                        </div>
+                    </div> 
+                </div>
+            </div> -->
+            <div class="row">
+                <!-- Profile Col -->
+                <div class="col s12 l4 psh-s8">
+                    <div class="row">
+                        <div class="col s12 white-text">
+                            <div class="card">
+                                <div class="card-panel" id="topPanel2">
+                                    <h4>My Profile</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s12">
+                            <ul class="collapsible">
+                                <li class="active">
+                                    <div class="collapsible-header ">
+                                        <p><i class="material-icons right">arrow_drop_down</i></p>
+                                    </div>
+                                    <div class="collapsible-body">
+                                         <div class="center">
+                                            <h4>Username</h4>
+                                            <h5>{{ psnger['username'] }}</h5>
+                                        </div>
+                                        <div class="center">
+                                            <h4>Name</h4>
+                                            <h5>{{ psnger['fname']+" "+psnger['lname'] }}</h5>
+                                        </div>
+                                        <div class="center">
+                                            <h4>CNIC</h4>
+                                            <h5>{{ psnger['cnic'] }}</h5>
+                                        </div>
+                                        <div class="center"> 
+                                            <h4>Phone #</h4>
+                                            <h5>{{ psnger['phone'] }}</h5>
+                                        </div>
+                                        <div class="center">
+                                            <a href="#editprofile" class="btn modal-trigger">Edit Profile</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- Ticket Col -->
+                <div class="col s12  l8 pll-s4">
+                    <div class="row">
+                        <div class="col s12 white-text">
+                            <div class="card">
+                                <div class="card-panel" id="topPanel">
+                                    <h4 style="display: flex; align-items: center; margin: 0 auto; width: max-content"><i class="material-icons" style="padding: 15px">assignment</i><span>Tickets</span></h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s12">
+                            {% if tks %}
+                                <ul class="collapsible">
+                                    {% for t in tks %}
+                                        <li class="{{ t['class'] }}">
+                                            <div class="collapsible-header">
+                                                <h5>Ticket No: {{ t['no'] }}<i class="material-icons right">arrow_drop_down</i>
+                                                </h5>
+                                            </div>
+                                            <div class="collapsible-body">
+                                                <table class="centered responsive-table">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Train</th>
+                                                        <th>Departure</th>
+                                                        <th>Payment</th>
+                                                        <th></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>{{ t['trainName'] }}</td>
+                                                        <td>{{ t['DeptTime'] }}</td>
+                                                        <td>{{ t['Payment'] }}</td>
+                                                        <td><a href="/ticketDetail?tkid={{ t['BookID'] }}">See Details</a></td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <div class="card">
+                                    <div class="card-panel red-text">
+                                        <h4>No Tickets!!</h4>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal Structure -->
+        <div id="editprofile" class="modal">
+            <div class="modal-content">
+                <div class="center">
+                    <h3>Edit My Profile</h3>
+                </div>
+                <div>
+                    <form action="/updatePassProfile" method="POST">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" value="{{ psnger['username'] }}" name="user" placeholder="Enter Username"
+                            required disabled>
+
+                        <label for="fname">First Name</label>
+                        <input type="text" id="fname" value="{{ psnger['fname'] }}" name="fname" placeholder="Enter your First Name"
+                            required>
+
+                        <label for="lname">Last Name</label>
+                        <input type="text" id="lname" value="{{ psnger['lname'] }}" name="lname" placeholder="Enter your Last Name"
+                            required>
+
+                        <label for="cnicNo">CNIC</label>
+                        <input type="tel" id="cnicNo" value="{{ psnger['cnic'] }}" name="cnic" placeholder="xxxxx-xxxxxxx-x" max="13"
+                             required>
+
+                        <label for="phoneNo">Contact Number</label>
+                        <input type="tel" id="phoneNo" name="ph" value="{{ psnger['phone'] }}" placeholder="xxxx-xxxxxxx" max="11" pattern="^\d{4}-\d{7}$"
+                            required>
+
+                        <button type="submit" name="submitBtn" id="signUpBut" class="btn">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+{% endblock %}

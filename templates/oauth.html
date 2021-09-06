@@ -1,0 +1,15 @@
+{% extends 'main.html' %}
+
+{% block head %}
+<title>Employee</title>
+{% endblock %}
+
+
+{% block body %}
+
+    <a href="/logout">Logout</a>
+    <h1>Hello {{oauth['name']}}</h1>
+    <h3>Email: {{oauth['email']}}</h3>
+    <img src="{{oauth['picture']}}" alt="Profile Pic" style="height: 120px;">
+
+{% endblock %}

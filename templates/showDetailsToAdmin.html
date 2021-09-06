@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="{{ url_for('static', filename='imgs/trainLogo.png') }}" type="image/png" sizes="16x16">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='fontAwesome/css/all.min.css') }}">
+    <title>Admin Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <style>
+        .trainName {
+            background-color: #fff;
+            width: 100%;
+            padding: 15px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px #ddd;
+        }
+
+        #trains {
+            width: 50%;
+            margin: 0 auto;
+        }
+
+        .trainName i {
+            padding: 0 30px;
+            color: #00d897;
+            font-size: 20px;
+        }
+
+        .closeIcon {
+            position: absolute;
+            top: 12px;
+            right: 30px;
+            font-size: 20px;
+            z-index: 10000;
+        }
+
+        #empTable {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 30px #ddd;
+            background-color: #fff;
+        }
+
+        #empTable th {
+            background: linear-gradient(to bottom left, #00af7a, #00d897);
+            text-align: center;
+            padding: 10px;
+            color: #fff;
+        }
+
+        .singleEmp {
+            width: 100%
+        }
+
+        .singleEmp td {
+            padding: 10px;
+            border-top: 1px solid #d0d0d0;
+            text-align: center;
+        }
+
+        .singleEmp i {
+            padding: 2px 30px;
+        }
+
+        .sched {
+            max-height: 80vh;
+            overflow: auto;
+            background-color: #fff;
+            display: grid;
+            grid-template-columns: auto auto auto;
+            position: fixed;
+            margin: 20px 0px;
+            margin-top: 10vh;
+            box-shadow: 0 0 60px #232323;
+            z-index: 100;
+            padding: 3% 1%;
+            padding-top: 10%;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 94%;
+            border-radius: 10px;
+        }
+
+        #invisible {
+            width: 100%;
+            position: fixed;
+            z-index: -1;
+            min-height: 100vh;
+        }
+
+        #navItems {
+            display: none;
+            width: 100%;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            justify-content: space-evenly;
+            text-align: center;
+            color: #fff;
+            z-index: 100;
+            height: 100vh;
+        }
+
+        #empDetails {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: auto auto;
+            width: 80%;
+        }
+
+        .oneSched {
+            display: flex;
+            border: 1px solid #00af7a;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0px;
+            transition: .2s ease-in all;
+        }
+
+        .oneSched:hover {
+            cursor: pointer;
+            box-shadow: 0 0 40px #b1b1b1;
+        }
+
+        #fab {
+            transition: all ease-in-out .2s;
+            z-index: 100;
+            position: fixed;
+            bottom: 30px;
+            right: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #00d897;
+            border-radius: 50%;
+            transform: translateX(50%);
+            height: 50px;
+            width: 50px;
+            color: #fff;
+        }
+
+        #popMe {
+            transition: all ease-in-out .5s;
+            z-index: 10;
+            position: fixed;
+            bottom: 30px;
+            right: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #00d897;
+            border-radius: 50%;
+            box-shadow: 0 5px 50px #7d7d7d;
+            height: 50px;
+            transform: translateX(50%);
+            width: 50px;
+            color: #fff;
+        }
+
+        .navItem {
+            width: 100%;
+            overflow: auto;
+            color: #fff;
+            display: flex;
+            transition: all .2s ease-in-out;
+            flex-direction: column;
+            text-decoration: none;
+        }
+
+        .navItem i {
+            margin-top: 10vh;
+            font-size: 90px;
+        }
+
+        .navItem p {
+            font-size: 30px;
+            padding: 10px;
+        }
+
+        .navItem:hover {
+            color: #fff;
+            background: #00af7a;
+        }
+
+        body {
+            background: #E9EAEC;
+            padding-top: 8vh;
+
+        }
+
+        .navbar-collapse {
+            justify-content: flex-end;
+            color: #fff;
+        }
+
+        .accordion-body {
+            background-color: #f4f4f4;
+        }
+
+        #navItems input {
+            display: block;
+            margin: 5px auto;
+            padding: 10px 0px 10px 20px;
+            border: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 10vh;
+            display: none;
+            z-index: 1000;
+            right: 20px;
+        }
+
+        #trainNameTop {
+            text-align: center;
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 500;
+            font-size: 20px;
+            background-color: #fff;
+            width: 80%;
+            box-shadow: 0 0 20px #ededed;
+            padding: 20px;
+            margin-top: 50px;
+            border-radius: 20px;
+        }
+
+        #editEmp {
+            background-color: #fff;
+            position: fixed;
+            z-index: 20000;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 30px;
+            display: none;
+            border-radius: 10px;
+            box-shadow: 0 0 30px #8e8e8e;
+        }
+
+        #editEmp input {
+            width: 300px
+        }
+
+        .searchBox {
+            width: 50%;
+            padding: 15px;
+            border: none;
+            box-shadow: 0 10px 30px #b3b3b3;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .accordion-header {
+            background-color: #fff;
+        }
+
+        #editEmp input {
+            display: block;
+            margin: 10px;
+        }
+
+        .submitButton:hover {
+            box-shadow: 0 0 0 #42424299;
+        }
+
+        .submitButton {
+            display: block;
+            text-align: center;
+            border-radius: 200px;
+            padding: 10px 20px;
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            width: 60%;
+            margin: 10px auto;
+            background: linear-gradient(to top right, #E0673C, #dd7c5b);
+            box-shadow: 0 0px 10px #42424299;
+            transition: .2s ease-in all;
+        }
+
+        #desig {
+            display: block;
+            margin: 0 auto;
+            height: 50px;
+            width: 60%;
+        }
+
+        #selTrain {
+            display: block;
+            margin: 0 auto;
+            height: 50px;
+            width: 60%;
+        }
+
+        #navItems input {
+            width: 60%;
+        }
+
+        .noOf {
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border-radius: 10px;
+            color: #fff;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: .2s ease-in all;
+            width: 200px;
+        }
+
+        .noOf h2 {
+            font-size: 60px;
+        }
+
+        #toCards {
+            display: flex;
+            justify-content: space-evenly;
+        }
+
+        .noOf i {
+            font-size: 40px;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        #analytics {
+            padding: 20px;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .accordion {
+            width: 100%;
+        }
+
+        .DBack {
+            padding: 20px;
+            width: 70%;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 20px #bbb;
+            margin: 20px auto;
+        }
+
+        #line {
+            width: 100%;
+        }
+
+        #pie {
+            width: 100%;
+
+        }
+    </style>
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css"
+    />
+</head>
+<body>
+<div id="invisible" onclick="closeAll()">
+    <div id="showDetails" onclick="event.stopPropagation()"></div>
+</div>
+<div id="analytics">
+    <div id="toCards">
+        <div class="noOf" style="background: linear-gradient(to top right, #6815CC, #1F6EFC);">
+            <i class="fas fa-subway"></i>
+            <p>No Of Trains</p>
+            <h2 id="numOfTrains"></h2>
+        </div>
+        <div class="noOf" style="background: linear-gradient(to top right, #EF006F, #FF5A00);">
+            <i class="fas fa-calendar-alt"></i>
+            <p>No Of Schedules</p>
+            <h2 id="numOfScheds"></h2>
+        </div>
+        <div class="noOf" style="background: linear-gradient(to top right, #06B197, #87C425);">
+            <i class="fas fa-user-tie"></i>
+            <p>No Of Emps</p>
+            <h2 id="noOfEmps"></h2>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="editEmp">
+    <div class="closeIcon" onclick="closeEdit()"><i class="fas fa-times"></i></div>
+    <h4 style="text-align: center">Edit Employee</h4>
+    <input type="text" value="" class="form-control" id="firstName">
+    <input type="text" value="" class="form-control" id="lastName">
+    <input type="text" value="" class="form-control" id="Phone">
+    <input type="text" value="" class="form-control" id="CNIC">
+    <input type="text" value="" class="form-control" id="designation">
+    <button id="editReq" class="btn btn-success" style="width: 100%; margin: 10px auto">Save Edits</button>
+</div>
+
+<div class="DBack">
+    <div style="display: flex; justify-content: center">
+        <div id="line">
+            <canvas id="line-chart"></canvas>
+        </div>
+        <div id="pie">
+            <canvas id="pie-chart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="DBack">
+    <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                        aria-expanded="true" aria-controls="collapseOne">
+                    Show Trains
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                 data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <input class="searchBox" type="text" id="searchTrains" value="" placeholder="Search for Train"
+                           onkeyup="showTrainSearch()">
+                    <div id="trains">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    Show Employees
+                </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                 data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <input class="searchBox" type="text" id="searchEmp" value="" placeholder="Search for Employee"
+                           onkeyup="showEmpSearch()">
+                    <div id="emps"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="popMe">
+</div>
+<div id="navItems">
+    <div class="navItem" data-simplebar><i class="fas fa-user-tie"></i>
+        <p>Add Employee</p>
+        <div>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter Username" required>
+
+            <label for="fname">First Name</label>
+            <input type="text" id="fname" name="firstName" placeholder="Enter First Name" required>
+
+            <label for="lname">Last Name</label>
+            <input type="text" id="lname" name="lastName" placeholder="Enter Last Name" required>
+            <label for="desig">Designation</label>
+            <select class="form-control" name="desig" id="desig">
+                <option value="" disabled selected>Select Designation</option>
+                <option value="Driver">Driver</option>
+                <option value="Ticket Collector">Ticket Collector</option>
+            </select>
+            <label for="cnicNo">CNIC</label>
+            <input type="tel" id="cnic" name="cnic" placeholder="xxxxx-xxxxxxx-x" max="13"
+                   pattern="^\d{5}-\d{7}-\d{1}$" required>
+
+            <label for="phoneNo">Contact Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="xxxx-xxxxxxx" max="11" pattern="^\d{4}-\d{7}$"
+                   required>
+            <button class="submitButton" onclick="addEmp()">Add Employee</button>
+        </div>
+    </div>
+    <div class="navItem" data-simplebar><i class="fas fa-subway"></i>
+        <p>Add Train</p>
+        <div>
+            <label for="trainName">Enter Train Name</label>
+            <input type="text" id="trainName" name="trainName" placeholder="Enter Name of the Train">
+            <button class="submitButton" onclick="addTrain()">Add Train</button>
+        </div>
+    </div>
+    <div class="navItem" data-simplebar><i class="fas fa-calendar-alt"></i>
+        <p>Add Schedule</p>
+        <div>
+            <label for="start">Enter Starting Station</label>
+            <input type="text" id="start" name="start" placeholder="Starting Station">
+            <label for="end">Enter Ending Station</label>
+            <input type="text" id="end" name="end" placeholder="Ending Station">
+            <label for="dept">Enter Departure D&T</label>
+            <input type="text" id="dept" name="dept" placeholder="HH:MM DD/MM/YYYY">
+            <label for="trainName">Enter Fare</label>
+            <input type="number" id="fare" name="fare" placeholder="Enter only numbers">
+            <label for="selTrain">Select Train</label>
+            <select class="form-control" name="selTrain" id="selTrain">
+            </select>
+            <button class="submitButton" onclick="addSched()">Add Schedule</button>
+        </div>
+    </div>
+</div>
+
+<div id="fab" onclick="showAddEmp()">
+    <i class="fas fa-plus"></i>
+    <i style="display: none" id="closeBut" class="fas fa-times"></i>
+</div>
+
+<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+        <strong class="mr-auto">Bootstrap</strong>
+    </div>
+    <div class="toast-body">
+        Hello, world! This is a toast message.
+    </div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a style="margin-left: 30px" class="navbar-brand" href="/">Pakistan Railway</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+
+<script defer>
+    let res = ({{ res|tojson }});
+    let emps = ({{ emp|tojson }});
+    let lineGraph = {{ lineGraph|tojson }};
+    let pie = {{ pie|tojson }};
+    let trains = [];
+    let calcNot = []
+    let numOfEmps = []
+    let dates = []
+    let numOfBookings = []
+    for (let i = 0; i < lineGraph.length; i++) {
+        dates.push(lineGraph[i]["date"].slice(0, 11))
+        numOfBookings.push((lineGraph[i]["quant"]))
+    }
+    var options = {
+        responsive: true,
+        showLine: false,
+        legend: {
+            display: true,
+            position: "bottom",
+            labels: {
+                fontColor: "#333",
+                fontSize: 16
+            }
+        }
+
+    };
+    document.getElementById('numOfScheds').innerText = res.length
+    ctx = document.getElementById('line-chart').getContext('2d')
+    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, '#6815CC');
+    gradient.addColorStop(1, '#1F6EFC');
+    var myLineChart = new Chart(ctx, {
+        type: 'line',
+        label: "Ticket Bought In 5 Days",
+
+        data: {
+            labels: dates,
+            datasets: [
+                {
+                    label: "Ticket Bought In 5 Days",
+                    data: numOfBookings,
+                    borderColor: "lightgreen",
+                    fill: true,
+                    backgroundColor: gradient,
+                    radius: 5
+                }
+            ],
+        },
+        options: options,
+    });
+    ctx2 = document.getElementById('pie-chart').getContext('2d')
+    var myDoughnut = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ["Cash", "Card", "Jazzcash"],
+            datasets: [
+                {
+                    data: [pie["cash"], pie["card"], pie["jazz"]],
+                    backgroundColor: ["#00d998", "#a000e5", "#f80c00", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001f3f", "#39CCCC", "#01FF70", "#85144b", "#F012BE", "#3D9970", "#111111", "#AAAAAA"],
+                    radius: 5
+                }
+            ],
+        },
+    });
+
+
+    const printTrains = (val = "") => {
+        let str = ``
+        let trainName = ""
+        trains = []
+        let k = 1;
+        for (let i = 0; i < res.length; i++) {
+            if (trainName != res[i]["TrainName"]) {
+                calcNot.push(res[i]["TrainName"])
+                if (res[i]["TrainName"].toLowerCase().includes(val.toLowerCase())) {
+                    trainName = res[i]["TrainName"]
+                    str += "</div>"
+                    str += `<div class="trainsWithSched" onclick="showTrainSched(${res[i]["trainid"]},'${trainName}')" id="${k}">`
+                    str += `<div id="train${k}" class="trainName"><i class="fas fa-subway"></i>` + res[i]["TrainName"] + "</div>"
+                    k++;
+                    trains.push({trainName: res[i]["TrainName"], trainId: res[i]["trainid"]})
+                }
+            }
+        }
+        document.getElementById('trains').innerHTML = str
+    }
+    printTrains()
+    document.getElementById('numOfTrains').innerText = calcNot.length
+
+    const showEmps = (val = "") => {
+        str = ``
+        document.getElementById('emps').innerHTML = str
+        if (emps.length > 0) {
+            str += `<table id="empTable"><tr><th>First Name</th><th>Last Name</th><th>Phone</th><th>CNIC</th><th>Designation</th><th>Options</th></tr>`
+        } else {
+            str = '<p style="text-align:center; font-size: 20px" >No Employees Available</p>'
+        }
+        for (let i = 0; i < emps.length; i++) {
+            if (document.getElementById("emp" + emps[i]["empID"]) == null) {
+                numOfEmps.push(emps[i]["empID"])
+                if (toString(emps[i]["empID"]).toLowerCase().includes(val.toLowerCase()) || emps[i]["FName"].toLowerCase().includes(val.toLowerCase()) || emps[i]["LName"].toLowerCase().includes(val.toLowerCase()) || emps[i]["Phone"].toLowerCase().includes(val.toLowerCase()) || emps[i]["CNIC"].toLowerCase().includes(val.toLowerCase()) || emps[i]["Des"].toLowerCase().includes(val.toLowerCase())) {
+                    str += `<tr class="singleEmp" onclick="showEmpSched(${emps[i]["empID"]})" id="emp${emps[i]["empID"]}"><td>${emps[i]["FName"]}</td><td>${emps[i]["LName"]}</td><td>${emps[i]["Phone"]}</td><td>${emps[i]["CNIC"]}</td><td>${emps[i]["Des"]}</td><td><i style="color: tomato" onclick="deleteEmp(${emps[i]["empID"]})" class="fas fa-trash"></i><i style="color: #00BBEE" onclick="editEmp(${emps[i]["empID"]})" class="fas fa-pen"></i></td></tr>`
+                }
+            }
+            document.getElementById('emps').innerHTML = str
+        }
+        str += '</table>'
+        document.getElementById('emps').innerHTML = str
+    }
+    showEmps()
+    document.getElementById("noOfEmps").innerText = numOfEmps.length
+    const closeAll = () => {
+        document.getElementById('invisible').style.zIndex = "-1"
+        document.getElementById('showDetails').innerHTML = "";
+    }
+
+    const showTrainSched = (val, name) => {
+        let str = ""
+        str += `<p id="trainNameTop">${name}</p><div class="sched"><div class="closeIcon" onclick="closeAll()"><i class="fas fa-times"></i></div>`
+        for (let i = 0; i < res.length; i++) {
+            if (res[i]["trainid"] == val) {
+                if (res[i]["start"] != '0') {
+                    str += `<div class="oneSched" onclick="editSched(${res[i]["schedid"]},'train')" id="${res[i]["schedid"]}">`
+                    str += `<div>${res[i]["start"]}</div>`
+                    str += `<div>${res[i]["end"]}</div>`
+                    str += `<div>${res[i]["time"]}</div>`
+                    str += `<div>${res[i]["farePer"]}</div>`
+                    str += "</div>"
+                }
+            }
+        }
+        str += "</div>"
+        str += "</div>"
+        document.getElementById('invisible').style.zIndex = "3"
+        document.getElementById('showDetails').innerHTML = str;
+    }
+    const showEmpSched = (val) => {
+        let str = ""
+        str += `<div class="sched"><div class="closeIcon" onclick="closeAll()"><i class="fas fa-times"></i></div>`
+        for (let i = 0; i < emps.length; i++) {
+            if (val == emps[i]["empID"]) {
+                for (let k = 0; k < res.length; k++) {
+                    if (res[k]["schedid"] == emps[i]["SchedId"]) {
+                        str += `<div class="oneSched" onclick="editSched(${res[i]["schedid"]},'Emp')" id="${res[i]["schedid"]}">`
+                        str += `<div>${res[i]["start"]}</div>`
+                        str += `<div>${res[i]["end"]}</div>`
+                        str += `<div>${res[i]["time"]}</div>`
+                        str += `<div>${res[i]["farePer"]}</div>`
+                        str += "</div>"
+                    }
+                }
+            }
+        }
+        document.getElementById('invisible').style.zIndex = "3"
+        document.getElementById('showDetails').innerHTML = str
+    }
+    const editSched = (id, s) => {
+        window.location.href = 'editSchedTrain?schedid=' + id;
+    }
+
+    const showAddEmp = () => {
+        populateTrainsToSched();
+        if (document.getElementById('closeBut').style.display == "none") {
+            document.getElementById("popMe").style = "transform: translateX(50%) scale(100);"
+            setTimeout(() => {
+                document.getElementById("navItems").style.display = "flex";
+            }, 200)
+            document.getElementsByClassName('fa-plus')[0].style.display = 'none'
+            document.getElementsByClassName('toast')[0].style.display = 'block'
+            document.getElementById('closeBut').style.display = 'inline'
+            document.getElementsByTagName('body')[0].style.overflow = 'hidden'
+        } else {
+            document.getElementsByClassName('toast')[0].style.display = 'none'
+            document.getElementById("popMe").style = "transform: translateX(50%) scale(1);"
+            document.getElementsByClassName('fa-plus')[0].style.display = 'inline'
+            document.getElementById("navItems").style.display = "none";
+            document.getElementById('closeBut').style.display = 'none'
+            setTimeout(() => {
+                document.getElementsByTagName('body')[0].style.overflow = 'auto'
+            }, 600)
+        }
+    }
+
+    const populateTrainsToSched = () => {
+        str = `<option value ="" disabled selected>Select A Train</option>`
+        console.log(trains)
+        for (let i = 0; i < trains.length; i++) {
+            str += `<option value ="${trains[i]["trainId"]}">${trains[i]["trainName"]}</option>`
+        }
+        document.getElementById("selTrain").innerHTML = str;
+    }
+    const showToast = (top, msg) => {
+        document.getElementsByClassName('mr-auto')[0].innerHTML = top
+        document.getElementsByClassName('toast-body')[0].innerHTML = msg
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+        var toastList = toastElList.map(function (toastEl) {
+            return new bootstrap.Toast(toastEl)
+        })
+        toastList[0].show()
+    }
+    const addTrain = () => {
+        const trainName = document.getElementById('trainName').value;
+        if (trainName.length == 0) {
+            showToast("Error!", "Enter Train Name!")
+            return
+        }
+
+        const Http = new XMLHttpRequest();
+        Http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.responseText == "already") {
+                    showToast("Error!", "Train with same name Already Exist")
+                } else {
+                    showToast("Success!", "Train Added Successfully")
+                }
+            }
+        };
+        Http.open("POST", '/addTrain', true);
+        Http.send(JSON.stringify({trainName: trainName}))
+    }
+    const addEmp = () => {
+        let Emp = {}
+        Emp["fname"] = document.getElementById('fname').value
+        Emp["lname"] = document.getElementById('lname').value
+        Emp["cnic"] = document.getElementById('cnic').value
+        Emp["contact"] = document.getElementById('phone').value
+        Emp["userName"] = document.getElementById('username').value
+        Emp["desig"] = document.getElementById("desig").value
+        document.getElementsByClassName('toast')[0].style.display = 'block'
+        if (Emp["fname"].length === 0 || Emp["lname"].length === 0 || Emp["cnic"].length === 0 || Emp["contact"].length === 0 || Emp["userName"].length === 0 || Emp["desig"].length === 0) {
+            showToast("Error", "Kindly fill all fields")
+            return
+        }
+        re = new RegExp("[0-9]{5}-[0-9]{7}-[0-9]{1}$")
+        if (re.test(Emp["cnic"]) == false) {
+            showToast("Error", "Enter Valid CNIC Number")
+            return
+        }
+        re = new RegExp("[0][3][0-5][0-9]{1}-[0-9]{7}$")
+        if (re.test(Emp["contact"]) == false) {
+            showToast("Error", "Enter Valid Phone Number")
+            return
+        }
+        const Http = new XMLHttpRequest();
+        Http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.responseText == "already") {
+                    showToast("Error!", "Employee with same username Already Exist")
+                } else {
+                    showToast("Success!", "Employee Added Successfully")
+                    console.log(JSON.parse(this.responseText))
+                    emps.push(JSON.parse(this.responseText))
+                    numOfEmps = []
+                    showEmps()
+                    document.getElementById("noOfEmps").innerText = numOfEmps.length
+                }
+            }
+        };
+        setTimeout(() => {
+            document.getElementsByClassName('toast')[0].style.display = 'none'
+        }, 2000)
+        Http.open("POST", '/addEmployee', true);
+        Http.send(JSON.stringify(Emp))
+    }
+    const addSched = () => {
+        let Sched = {}
+        Sched["start"] = document.getElementById('start').value
+        Sched["end"] = document.getElementById('end').value
+        Sched["dept"] = document.getElementById('dept').value
+        Sched["fare"] = document.getElementById('fare').value
+        Sched["trainid"] = document.getElementById('selTrain').value
+        document.getElementsByClassName('toast')[0].style.display = 'block'
+
+        if (Sched["start"].length == 0 || Sched["end"].length == 0 || Sched["dept"].length == 0 || Sched["fare"] <= 0 || toString(Sched["fare"]).length == 0 || Sched["trainid"].length == 0) {
+            showToast("Error", "Kindly Fill all the required Information")
+            return
+        }
+        re = new RegExp("[0-2]{1}[0-9]:[0-5][0-9] [0-3][0-9]/[0-1][0-9]/[2][0][2-4][0-9]$")
+        if (re.test(Sched["dept"]) == false) {
+            showToast("Error", "Invalid Date Format Please follow HH:MM DD/MM/YYYY")
+            return
+        }
+        const Http = new XMLHttpRequest();
+        Http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.responseText == "already") {
+                    showToast("Error!", "An Unknown Error Occurred!")
+                } else {
+                    showToast("Success!", "Schedule Added Successfully")
+                }
+            }
+        };
+        Http.open("POST", '/addSched', true);
+        Http.send(JSON.stringify(Sched))
+    }
+    const deleteEmp = (id) => {
+        document.getElementsByClassName('toast')[0].style.display = 'block'
+        event.stopPropagation()
+        const Http = new XMLHttpRequest();
+        Http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.responseText != "success") {
+                    showToast("Error!", "An Unknown Error Occurred!")
+                } else {
+                    showToast("Success!", "Employee Deleted Successfully")
+                }
+            }
+        };
+        Http.open("POST", '/deleteEmp', true);
+        Http.send(JSON.stringify({empId: id}))
+        setTimeout(() => {
+            document.getElementsByClassName('toast')[0].style.display = 'none'
+        }, 2000)
+
+        for (let i = 0; i < emps.length; i++) {
+            if (emps[i]["empID"] == id) {
+                emps.splice(i, 1)
+            }
+        }
+        numOfEmps = []
+        showEmps()
+        document.getElementById("noOfEmps").innerText = numOfEmps.length
+    }
+    const editEmp = (id) => {
+        document.getElementsByClassName('toast')[0].style.display = 'block'
+        event.stopPropagation()
+        targetEmp = ""
+        for (let i = 0; i < emps.length; i++) {
+            if (emps[i]["empID"] == id) {
+                targetEmp = emps[i]
+                break;
+            }
+        }
+        //str += `<tr class="singleEmp" onclick="showEmpSched(${emps[i]["empID"]})" id="emp${emps[i]["empID"]}"><td>${emps[i]["FName"]}</td><td>${emps[i]["LName"]}</td><td>${emps[i]["Phone"]}</td><td>${emps[i]["CNIC"]}</td><td>${emps[i]["Des"]}</td><td><i style="color: tomato" onclick="deleteEmp(${emps[i]["empID"]})" class="fas fa-trash"></i><i style="color: #00BBEE" onclick="editEmp(${emps[i]["empID"]})" class="fas fa-pen"></i></td></tr>`
+
+        document.getElementById('firstName').value = targetEmp["FName"]
+        document.getElementById('lastName').value = targetEmp["LName"]
+        document.getElementById('CNIC').value = targetEmp["CNIC"]
+        document.getElementById('designation').value = targetEmp["Des"]
+        document.getElementById('Phone').value = targetEmp["Phone"]
+        document.getElementById('editReq').onclick = () => {
+            editEmpReq(targetEmp["empID"])
+        }
+        document.getElementById('editEmp').style.display = 'block'
+    }
+    const editEmpReq = (empid) => {
+        emp = {}
+        emp["empId"] = empid
+        emp["fname"] = document.getElementById('firstName').value
+        emp["lname"] = document.getElementById('lastName').value
+        emp["cnic"] = document.getElementById('CNIC').value
+        emp["desig"] = document.getElementById('designation').value
+        emp["phone"] = document.getElementById('Phone').value
+        document.getElementsByClassName('toast')[0].style.display = 'block'
+
+        if (emp["fname"].length === 0 || emp["lname"].length === 0 || emp["cnic"].length === 0 || emp["phone"].length === 0 || emp["desig"].length === 0) {
+            showToast("Error", "Kindly fill all fields")
+            return
+        }
+        re = new RegExp("[0-9]{5}-[0-9]{7}-[0-9]{1}$")
+        if (re.test(emp["cnic"]) == false) {
+            showToast("Error", "Enter Valid CNIC Number")
+            return
+        }
+        re = new RegExp("[0][3][0-5][0-9]{1}-[0-9]{7}$")
+        if (re.test(emp["phone"]) == false) {
+            showToast("Error", "Enter Valid Phone Number")
+            return
+        }
+
+        const Http = new XMLHttpRequest();
+        Http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.responseText != "success") {
+                    showToast("Error!", "An Unknown Error Occurred!")
+                } else {
+                    showToast("Success!", "Employee Edited Successfully")
+                    for (let i = 0; i < emps.length; i++) {
+                        if (emps[i]["empID"] == empid) {
+                            str += `<tr class="singleEmp" onclick="showEmpSched(${emps[i]["empID"]})" id="emp${emps[i]["empID"]}"><td>${emps[i]["FName"]}</td><td>${emps[i]["LName"]}</td><td>${emps[i]["Phone"]}</td><td>${emps[i]["CNIC"]}</td><td>${emps[i]["Des"]}</td><td><i style="color: tomato" onclick="deleteEmp(${emps[i]["empID"]})" class="fas fa-trash"></i><i style="color: #00BBEE" onclick="editEmp(${emps[i]["empID"]})" class="fas fa-pen"></i></td></tr>`
+                            emps[i]["FName"] = emp["fname"]
+                            emps[i]["LName"] = emp["lname"]
+                            emps[i]["Phone"] = emp["phone"]
+                            emps[i]["CNIC"] = emp["cnic"]
+                            emps[i]["Des"] = emp["desig"]
+                        }
+                    }
+                    showEmps()
+                }
+            }
+        };
+        Http.open("POST", '/editEmp', true);
+        Http.send(JSON.stringify(emp))
+        setTimeout(() => {
+            document.getElementsByClassName('toast')[0].style.display = 'none'
+        }, 2000)
+    }
+    const closeEdit = () => {
+        document.getElementById('editEmp').style.display = 'none'
+    }
+
+    const showTrainSearch = () => {
+        printTrains(document.getElementById('searchTrains').value)
+    }
+    const showEmpSearch = () => {
+        showEmps(document.getElementById('searchEmp').value)
+    }
+</script>
+
+
+</body>
+</html>
